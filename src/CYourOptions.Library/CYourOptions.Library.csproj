@@ -6,9 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="Stories\Data\nodes.csv" />
-    <EmbeddedResource Include="Stories\Data\choices.csv" />
-  </ItemGroup>
-
 </Project>

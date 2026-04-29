@@ -1,12 +1,13 @@
 using Godot;
 using CYourOptions.Library.Models;
 using CYourOptions.Library.Services;
-using CYourOptions.Library.Stories;
 
 namespace CYourOptions.Game.Scripts;
 
 public partial class GameController : Control
 {
+    private const string StartNodeId = "monday_morning";
+
     private DecisionEngine _engine = null!;
     private SaveManager _saveManager = null!;
 
@@ -19,7 +20,8 @@ public partial class GameController : Control
 
     public override void _Ready()
     {
-        _engine = new DecisionEngine(TheProductionIncident.GetNodes());
+        var nodes = LoadStoryFromResources();
+        _engine = new DecisionEngine(nodes);
         _saveManager = new SaveManager();
 
         _titleLabel = GetNode<Label>("%TitleLabel");
@@ -32,8 +34,19 @@ public partial class GameController : Control
         _backButton.Pressed += OnBackPressed;
         _restartButton.Pressed += OnRestartPressed;
 
-        _engine.Start(TheProductionIncident.StartNodeId);
+        _engine.Start(StartNodeId);
         UpdateUI();
+    }
+
+    private static List<DecisionNode> LoadStoryFromResources()
+    {
+        using var nodesFile = FileAccess.Open("res://nodes.csv", FileAccess.ModeFlags.Read);
+        using var choicesFile = FileAccess.Open("res://choices.csv", FileAccess.ModeFlags.Read);
+
+        var nodesCsv = nodesFile.GetAsText();
+        var choicesCsv = choicesFile.GetAsText();
+
+        return CsvStoryLoader.ParseFromCsv(nodesCsv, choicesCsv);
     }
 
     private void UpdateUI()
@@ -43,13 +56,11 @@ public partial class GameController : Control
         _titleLabel.Text = node.Title;
         _textLabel.Text = node.Text;
 
-        // Clear old choice buttons
         foreach (var child in _choicesContainer.GetChildren())
         {
             child.QueueFree();
         }
 
-        // Add choice buttons
         foreach (var choice in node.Choices)
         {
             var button = new Button();
@@ -83,7 +94,7 @@ public partial class GameController : Control
 
     private void OnRestartPressed()
     {
-        _engine.Start(TheProductionIncident.StartNodeId);
+        _engine.Start(StartNodeId);
         UpdateUI();
     }
 }

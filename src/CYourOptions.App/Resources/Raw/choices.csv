@@ -1,0 +1,52 @@
+FromNodeId,Label,NextNodeId
+monday_morning,Check the logs immediately,check_logs
+monday_morning,Look at the deploy history,deploy_history
+monday_morning,Ask in the channel what changed,ask_channel
+monday_morning,Go make coffee,make_coffee
+check_logs,Check the config values directly,check_config
+check_logs,Look at recent commits to PaymentProcessor,recent_commits
+deploy_history,Revert Jamie's commit immediately,revert_immediately
+deploy_history,Read through Jamie's changes first,read_jamies_code
+deploy_history,Message Jamie directly,message_jamie
+ask_channel,Volunteer to lead the incident,lead_incident
+ask_channel,Stay quiet and investigate on your own,check_logs
+check_config,Restore the config value manually,manual_fix
+check_config,Find out why the deploy cleared it,read_jamies_code
+recent_commits,Revert the commit,revert_immediately
+recent_commits,Write the missing migration script,write_migration
+recent_commits,Check if there's a feature flag to bypass the new code,feature_flag
+lead_incident,Check how many customers are affected,blast_radius
+lead_incident,Focus on the fix first metrics later,check_logs
+read_jamies_code,Run the seeding script manually in prod,run_seed_script
+read_jamies_code,Revert and fix the deploy process,revert_and_fix
+read_jamies_code,Hotfix: add fallback to env vars,hotfix_fallback
+message_jamie,Ask Jamie to flip the flag in prod,feature_flag
+message_jamie,Flip it yourself — faster,flip_it_yourself
+message_jamie,Revert instead — flags are unreliable,revert_immediately
+flip_it_yourself,Reassure Jamie — mistakes happen,ending_hero
+flip_it_yourself,Focus on process not blame,ending_flag_save
+revert_immediately,Skip the failing test and force deploy,skip_tests
+revert_immediately,Delete Jamie's test file and redeploy,delete_test
+revert_immediately,Fix the test to match reverted behavior,fix_test_revert
+manual_fix,Write up the incident and propose fixes,ending_bandaid
+manual_fix,Fix the root cause now while context is fresh,revert_and_fix
+write_migration,Deploy the script to prod,run_seed_script
+write_migration,Too risky — just revert for now,revert_and_fix
+feature_flag,Celebrate and write up the incident,ending_flag_save
+feature_flag,Investigate why the flag defaulted to ON,flag_investigation
+run_seed_script,Document the deploy gap and move on,ending_proper_fix
+run_seed_script,Add the seed script to the CI pipeline,ending_hero
+hotfix_fallback,Ship it and write up the incident,ending_hero
+hotfix_fallback,Add alerting for when the fallback triggers,ending_proper_fix
+revert_and_fix,Merge and deploy the fixed version,ending_proper_fix
+blast_radius,Reply with an honest estimate,honest_eta
+blast_radius,Say 'working on it' and focus on the fix,check_logs
+honest_eta,Go for the fast config fix,manual_fix
+honest_eta,Revert — it's more certain,revert_immediately
+skip_tests,Immediately re-run CI to validate,validate_after_skip
+skip_tests,It's fine write up the incident,ending_cowboy
+validate_after_skip,Write up the incident with the proposal,ending_proper_fix
+delete_test,Write up the incident,ending_bandaid_test
+fix_test_revert,Write up the incident,ending_proper_fix
+flag_investigation,Propose a 'flags default OFF in prod' policy,ending_hero
+flag_investigation,Just document it in the post-mortem,ending_flag_save

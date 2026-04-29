@@ -11,19 +11,6 @@ public static class CsvStoryLoader
         return ParseFromCsv(nodesText, choicesText);
     }
 
-    public static List<DecisionNode> LoadEmbedded(string nodesResourceName, string choicesResourceName)
-    {
-        var assembly = typeof(CsvStoryLoader).Assembly;
-        using var nodesStream = assembly.GetManifestResourceStream(nodesResourceName)
-            ?? throw new FileNotFoundException($"Embedded resource not found: {nodesResourceName}");
-        using var choicesStream = assembly.GetManifestResourceStream(choicesResourceName)
-            ?? throw new FileNotFoundException($"Embedded resource not found: {choicesResourceName}");
-
-        using var nodesReader = new StreamReader(nodesStream);
-        using var choicesReader = new StreamReader(choicesStream);
-
-        return ParseFromCsv(nodesReader.ReadToEnd(), choicesReader.ReadToEnd());
-    }
 
     public static List<DecisionNode> ParseFromCsv(string nodesCsv, string choicesCsv)
     {

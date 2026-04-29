@@ -6,9 +6,10 @@ namespace CYourOptions.Game.Scripts;
 
 public partial class GameController : Control
 {
-    private const string StartNodeId = "monday_morning";
+    [Export] public string StoryPath { get; set; } = "res://stories/the-production-incident";
 
     private DecisionEngine _engine = null!;
+    private string _startNodeId = null!;
 
     private Label _titleLabel = null!;
     private RichTextLabel _textLabel = null!;
@@ -19,7 +20,7 @@ public partial class GameController : Control
 
     public override void _Ready()
     {
-        var nodes = LoadStoryFromResources();
+        var nodes = LoadStory(StoryPath);
         _engine = new DecisionEngine(nodes);
 
         _titleLabel = GetNode<Label>("%TitleLabel");
@@ -32,19 +33,34 @@ public partial class GameController : Control
         _backButton.Pressed += OnBackPressed;
         _restartButton.Pressed += OnRestartPressed;
 
-        _engine.Start(StartNodeId);
+        _startNodeId = nodes[0].Id;
+        _engine.Start(_startNodeId);
         UpdateUI();
     }
 
-    private static List<DecisionNode> LoadStoryFromResources()
+    private static List<DecisionNode> LoadStory(string storyPath)
     {
-        using var nodesFile = FileAccess.Open("res://nodes.csv", FileAccess.ModeFlags.Read);
-        using var choicesFile = FileAccess.Open("res://choices.csv", FileAccess.ModeFlags.Read);
+        var nodesPath = $"{storyPath}/nodes.csv";
+        var choicesPath = $"{storyPath}/choices.csv";
 
-        var nodesCsv = nodesFile.GetAsText();
-        var choicesCsv = choicesFile.GetAsText();
+        var nodesFile = FileAccess.Open(nodesPath, FileAccess.ModeFlags.Read);
+        if (nodesFile is null)
+            throw new System.IO.FileNotFoundException(
+                $"Could not open {nodesPath}: {FileAccess.GetOpenError()}");
 
-        return CsvStoryLoader.ParseFromCsv(nodesCsv, choicesCsv);
+        var choicesFile = FileAccess.Open(choicesPath, FileAccess.ModeFlags.Read);
+        if (choicesFile is null)
+        {
+            nodesFile.Dispose();
+            throw new System.IO.FileNotFoundException(
+                $"Could not open {choicesPath}: {FileAccess.GetOpenError()}");
+        }
+
+        using (nodesFile)
+        using (choicesFile)
+        {
+            return CsvStoryLoader.ParseFromCsv(nodesFile.GetAsText(), choicesFile.GetAsText());
+        }
     }
 
     private void UpdateUI()
@@ -59,14 +75,18 @@ public partial class GameController : Control
             child.QueueFree();
         }
 
-        foreach (var choice in node.Choices)
+        for (int i = 0; i < node.Choices.Count; i++)
         {
             var button = new Button();
-            button.Text = choice.Label;
+            button.Text = node.Choices[i].Label;
             button.SizeFlagsHorizontal = SizeFlags.ExpandFill;
             button.AddThemeFontSizeOverride("font_size", 28);
-            var nextNodeId = choice.NextNodeId;
-            button.Pressed += () => OnChoicePressed(nextNodeId);
+            int choiceIndex = i;
+            button.Pressed += () =>
+            {
+                _engine.MakeChoice(choiceIndex);
+                UpdateUI();
+            };
             _choicesContainer.AddChild(button);
         }
 
@@ -74,14 +94,6 @@ public partial class GameController : Control
         _restartButton.Visible = node.IsEndNode;
         _endLabel.Visible = node.IsEndNode;
         _choicesContainer.Visible = !node.IsEndNode;
-    }
-
-    private void OnChoicePressed(string nextNodeId)
-    {
-        var node = _engine.CurrentNode!;
-        var index = node.Choices.FindIndex(c => c.NextNodeId == nextNodeId);
-        _engine.MakeChoice(index);
-        UpdateUI();
     }
 
     private void OnBackPressed()
@@ -92,7 +104,7 @@ public partial class GameController : Control
 
     private void OnRestartPressed()
     {
-        _engine.Start(StartNodeId);
+        _engine.Start(_startNodeId);
         UpdateUI();
     }
 }

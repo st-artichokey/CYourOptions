@@ -9,7 +9,6 @@ public partial class GameController : Control
     private const string StartNodeId = "monday_morning";
 
     private DecisionEngine _engine = null!;
-    private SaveManager _saveManager = null!;
 
     private Label _titleLabel = null!;
     private RichTextLabel _textLabel = null!;
@@ -22,7 +21,6 @@ public partial class GameController : Control
     {
         var nodes = LoadStoryFromResources();
         _engine = new DecisionEngine(nodes);
-        _saveManager = new SaveManager();
 
         _titleLabel = GetNode<Label>("%TitleLabel");
         _textLabel = GetNode<RichTextLabel>("%TextLabel");

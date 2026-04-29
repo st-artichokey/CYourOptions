@@ -4,7 +4,7 @@ namespace CYourOptions.Library.Stories;
 
 /// <summary>
 /// "The Production Incident" — a branching story about a developer's Monday morning
-/// when everything goes wrong. 24 nodes, 5 distinct endings.
+/// when everything goes wrong. 30 nodes, 6 distinct endings.
 /// </summary>
 public static class TheProductionIncident
 {
@@ -124,8 +124,20 @@ public static class TheProductionIncident
             Choices =
             [
                 new Choice { Label = "Ask Jamie to flip the flag in prod", NextNodeId = "feature_flag" },
-                new Choice { Label = "Flip it yourself — faster", NextNodeId = "feature_flag" },
+                new Choice { Label = "Flip it yourself — faster", NextNodeId = "flip_it_yourself" },
                 new Choice { Label = "Revert instead — flags are unreliable", NextNodeId = "revert_immediately" }
+            ]
+        },
+
+        new DecisionNode
+        {
+            Id = "flip_it_yourself",
+            Title = "Taking the Wheel",
+            Text = "You open LaunchDarkly and flip 'use-config-service' to OFF before Jamie can respond. Error rate drops to zero in under a minute. Jamie messages: 'I was just about to — oh, you got it. Thanks.' There's a brief awkward pause. Jamie adds: 'I should have caught this. I'm sorry.' You realize how you respond here matters more than the technical fix.",
+            Choices =
+            [
+                new Choice { Label = "Reassure Jamie — mistakes happen", NextNodeId = "ending_hero" },
+                new Choice { Label = "Focus on process, not blame", NextNodeId = "ending_flag_save" }
             ]
         },
 
@@ -199,7 +211,8 @@ public static class TheProductionIncident
             Text = "You add three lines to ConfigProvider: if the config service returns empty, fall back to the environment variable. You push, CI passes (all tests still work because the fallback is transparent), deploy goes out. Error rate drops to zero. It's elegant — the new system works when ready, old system covers gaps.",
             Choices =
             [
-                new Choice { Label = "Ship it and write up the incident", NextNodeId = "ending_hero" }
+                new Choice { Label = "Ship it and write up the incident", NextNodeId = "ending_hero" },
+                new Choice { Label = "Add alerting for when the fallback triggers", NextNodeId = "ending_proper_fix" }
             ]
         },
 
@@ -245,8 +258,19 @@ public static class TheProductionIncident
             Text = "You push with `--no-verify` and trigger a manual deploy pipeline that skips tests. The deploy goes out. Error rate drops to zero. The incident is over. But now you have a deploy in production that hasn't passed CI, and a precedent that tests can be skipped during incidents.",
             Choices =
             [
-                new Choice { Label = "Immediately re-run CI to validate", NextNodeId = "ending_cowboy" },
+                new Choice { Label = "Immediately re-run CI to validate", NextNodeId = "validate_after_skip" },
                 new Choice { Label = "It's fine, write up the incident", NextNodeId = "ending_cowboy" }
+            ]
+        },
+
+        new DecisionNode
+        {
+            Id = "validate_after_skip",
+            Title = "Validating After the Fact",
+            Text = "You trigger a full CI run against the deployed commit. It passes — the revert is clean. You update the incident channel: 'Deploy validated post-hoc, all tests green.' Your manager nods. It was a cowboy move, but you cleaned up after yourself. In the retro, you propose adding a 'break glass' CI bypass that auto-triggers validation after deploy.",
+            Choices =
+            [
+                new Choice { Label = "Write up the incident with the proposal", NextNodeId = "ending_proper_fix" }
             ]
         },
 
@@ -257,7 +281,7 @@ public static class TheProductionIncident
             Text = "You delete ConfigProviderTest.cs, commit with message 'Remove test blocking revert (will re-add)', and push. CI passes. Deploy succeeds. Error rate drops. You make a mental note to re-add that test... later. You add a TODO in the code. Whether it ever gets done is another story.",
             Choices =
             [
-                new Choice { Label = "Write up the incident", NextNodeId = "ending_bandaid" }
+                new Choice { Label = "Write up the incident", NextNodeId = "ending_bandaid_test" }
             ]
         },
 
@@ -311,7 +335,14 @@ public static class TheProductionIncident
         {
             Id = "ending_bandaid",
             Title = "The Band-Aid",
-            Text = "The bleeding stopped but the wound isn't healed. The manual fix or deleted test solved the immediate problem, but technical debt accumulated. A month later, a similar incident happens with a different service. The post-mortem references yours: 'Same root cause — see incident #4471.' Your manager sighs."
+            Text = "The bleeding stopped but the wound isn't healed. You restored the config value manually, which solved the immediate problem — but the deploy pipeline still has no guardrails. A month later, a similar incident happens with a different service: a deploy overwrites config with no migration step. The post-mortem references yours: 'Same root cause — see incident #4471.' Your manager sighs."
+        },
+
+        new DecisionNode
+        {
+            Id = "ending_bandaid_test",
+            Title = "The Missing Test",
+            Text = "The revert went out and production recovered. But that deleted test file lingers in the git history like a guilty conscience. You told yourself you'd re-add it. Three sprints later, someone refactors ConfigProvider again — and introduces the exact bug Jamie's test would have caught. The incident channel lights up for the second time. You stare at your TODO comment in the code and wonder if 'later' ever really comes."
         },
 
         new DecisionNode

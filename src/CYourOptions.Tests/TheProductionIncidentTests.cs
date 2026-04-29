@@ -2,6 +2,7 @@ using CYourOptions.Library.Models;
 using CYourOptions.Library.Services;
 using CYourOptions.Library.Stories;
 
+
 namespace CYourOptions.Library.Tests;
 
 public class TheProductionIncidentTests
@@ -86,7 +87,6 @@ public class TheProductionIncidentTests
         var engine = new DecisionEngine(_nodes);
         engine.Start(TheProductionIncident.StartNodeId);
 
-        // Always pick the first choice until we hit an ending
         int steps = 0;
         while (!engine.CurrentNode!.IsEndNode && steps < 50)
         {
@@ -96,4 +96,5 @@ public class TheProductionIncidentTests
 
         Assert.True(engine.CurrentNode.IsEndNode, "Should reach an ending within 50 steps");
     }
+
 }

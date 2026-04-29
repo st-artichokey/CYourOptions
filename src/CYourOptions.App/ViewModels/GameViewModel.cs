@@ -5,25 +5,27 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using CYourOptions.Library.Models;
 using CYourOptions.Library.Services;
-using CYourOptions.Library.Stories;
 
 namespace CYourOptions.App.ViewModels;
 
 public class GameViewModel : INotifyPropertyChanged
 {
+    private const string StartNodeId = "monday_morning";
+
     private readonly DecisionEngine _engine;
     private readonly SaveManager _saveManager;
 
     public GameViewModel()
     {
-        _engine = new DecisionEngine(TheProductionIncident.GetNodes());
+        var nodes = LoadStoryFromAssets();
+        _engine = new DecisionEngine(nodes);
         _saveManager = new SaveManager();
 
         MakeChoiceCommand = new Command<int>(MakeChoice);
         GoBackCommand = new Command(GoBack, () => CanGoBack);
         RestartCommand = new Command(Restart);
 
-        _engine.Start(TheProductionIncident.StartNodeId);
+        _engine.Start(StartNodeId);
         UpdateProperties();
     }
 
@@ -37,6 +39,17 @@ public class GameViewModel : INotifyPropertyChanged
     public ICommand MakeChoiceCommand { get; }
     public ICommand GoBackCommand { get; }
     public ICommand RestartCommand { get; }
+
+    private static List<DecisionNode> LoadStoryFromAssets()
+    {
+        using var nodesStream = FileSystem.OpenAppPackageFileAsync("nodes.csv").GetAwaiter().GetResult();
+        using var choicesStream = FileSystem.OpenAppPackageFileAsync("choices.csv").GetAwaiter().GetResult();
+
+        using var nodesReader = new StreamReader(nodesStream);
+        using var choicesReader = new StreamReader(choicesStream);
+
+        return CsvStoryLoader.ParseFromCsv(nodesReader.ReadToEnd(), choicesReader.ReadToEnd());
+    }
 
     private void MakeChoice(int index)
     {
@@ -52,7 +65,7 @@ public class GameViewModel : INotifyPropertyChanged
 
     private void Restart()
     {
-        _engine.Start(TheProductionIncident.StartNodeId);
+        _engine.Start(StartNodeId);
         UpdateProperties();
     }
 

@@ -1,12 +1,19 @@
 using CYourOptions.Library.Models;
 using CYourOptions.Library.Services;
-using CYourOptions.Library.Stories;
 
 namespace CYourOptions.Library.Tests;
 
 public class TheProductionIncidentTests
 {
-    private readonly List<DecisionNode> _nodes = TheProductionIncident.GetNodes();
+    private const string StartNodeId = "monday_morning";
+    private readonly List<DecisionNode> _nodes;
+
+    public TheProductionIncidentTests()
+    {
+        var nodesCsvPath = Path.Combine(FindRepoRoot(), "tools", "CsvStoryGenerator", "examples", "nodes.csv");
+        var choicesCsvPath = Path.Combine(FindRepoRoot(), "tools", "CsvStoryGenerator", "examples", "choices.csv");
+        _nodes = CsvStoryLoader.LoadFromCsv(nodesCsvPath, choicesCsvPath);
+    }
 
     [Fact]
     public void AllNodes_HaveUniqueIds()
@@ -33,13 +40,13 @@ public class TheProductionIncidentTests
     [Fact]
     public void StartNode_Exists()
     {
-        Assert.Contains(_nodes, n => n.Id == TheProductionIncident.StartNodeId);
+        Assert.Contains(_nodes, n => n.Id == StartNodeId);
     }
 
     [Fact]
     public void StartNode_HasChoices()
     {
-        var startNode = _nodes.First(n => n.Id == TheProductionIncident.StartNodeId);
+        var startNode = _nodes.First(n => n.Id == StartNodeId);
         Assert.NotEmpty(startNode.Choices);
     }
 
@@ -61,7 +68,7 @@ public class TheProductionIncidentTests
     {
         var reachable = new HashSet<string>();
         var queue = new Queue<string>();
-        queue.Enqueue(TheProductionIncident.StartNodeId);
+        queue.Enqueue(StartNodeId);
 
         while (queue.Count > 0)
         {
@@ -84,9 +91,8 @@ public class TheProductionIncidentTests
     public void Engine_CanPlayThrough_ToEnding()
     {
         var engine = new DecisionEngine(_nodes);
-        engine.Start(TheProductionIncident.StartNodeId);
+        engine.Start(StartNodeId);
 
-        // Always pick the first choice until we hit an ending
         int steps = 0;
         while (!engine.CurrentNode!.IsEndNode && steps < 50)
         {
@@ -95,5 +101,15 @@ public class TheProductionIncidentTests
         }
 
         Assert.True(engine.CurrentNode.IsEndNode, "Should reach an ending within 50 steps");
+    }
+
+    private static string FindRepoRoot()
+    {
+        var dir = AppContext.BaseDirectory;
+        while (dir != null && !Directory.Exists(Path.Combine(dir, "tools")))
+        {
+            dir = Directory.GetParent(dir)?.FullName;
+        }
+        return dir ?? throw new DirectoryNotFoundException("Could not find repo root with tools/ directory");
     }
 }

@@ -39,29 +39,21 @@ public class SaveManager
     /// <exception cref="InvalidOperationException">Save data contains an invalid path through the tree.</exception>
     public void RestoreSnapshot(DecisionEngine engine, SaveData data)
     {
-        engine.Start(data.History.Count > 0 ? data.History[0] : data.CurrentNodeId);
+        if (data.History.Count == 0)
+        {
+            engine.Start(data.CurrentNodeId);
+            return;
+        }
 
-        for (int i = 1; i < data.History.Count; i++)
+        engine.Start(data.History[0]);
+        foreach (var nextNodeId in data.History.Skip(1).Append(data.CurrentNodeId))
         {
             var current = engine.CurrentNode!;
-            var nextNodeId = data.History[i];
             var choiceIndex = current.Choices.FindIndex(c => c.NextNodeId == nextNodeId);
 
             if (choiceIndex < 0)
                 throw new InvalidOperationException(
                     $"Cannot restore: no choice from '{current.Id}' leads to '{nextNodeId}'.");
-
-            engine.MakeChoice(choiceIndex);
-        }
-
-        if (data.History.Count > 0)
-        {
-            var current = engine.CurrentNode!;
-            var choiceIndex = current.Choices.FindIndex(c => c.NextNodeId == data.CurrentNodeId);
-
-            if (choiceIndex < 0)
-                throw new InvalidOperationException(
-                    $"Cannot restore: no choice from '{current.Id}' leads to '{data.CurrentNodeId}'.");
 
             engine.MakeChoice(choiceIndex);
         }

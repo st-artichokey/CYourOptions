@@ -44,24 +44,12 @@ public partial class GameController : Control
         var nodesPath = $"{storyPath}/nodes.csv";
         var choicesPath = $"{storyPath}/choices.csv";
 
-        var nodesFile = FileAccess.Open(nodesPath, FileAccess.ModeFlags.Read);
-        if (nodesFile is null)
-            throw new System.IO.FileNotFoundException(
-                $"Could not open {nodesPath}: {FileAccess.GetOpenError()}");
+        using var nodesFile = FileAccess.Open(nodesPath, FileAccess.ModeFlags.Read)
+            ?? throw new System.IO.FileNotFoundException($"Could not open {nodesPath}: {FileAccess.GetOpenError()}");
+        using var choicesFile = FileAccess.Open(choicesPath, FileAccess.ModeFlags.Read)
+            ?? throw new System.IO.FileNotFoundException($"Could not open {choicesPath}: {FileAccess.GetOpenError()}");
 
-        var choicesFile = FileAccess.Open(choicesPath, FileAccess.ModeFlags.Read);
-        if (choicesFile is null)
-        {
-            nodesFile.Dispose();
-            throw new System.IO.FileNotFoundException(
-                $"Could not open {choicesPath}: {FileAccess.GetOpenError()}");
-        }
-
-        using (nodesFile)
-        using (choicesFile)
-        {
-            return CsvStoryLoader.ParseFromCsv(nodesFile.GetAsText(), choicesFile.GetAsText());
-        }
+        return CsvStoryLoader.ParseFromCsv(nodesFile.GetAsText(), choicesFile.GetAsText());
     }
 
     private void UpdateUI()

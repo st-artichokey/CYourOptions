@@ -3,7 +3,7 @@
 ## Setup
 
 1. Install [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-2. Install [Godot 4.4+](https://godotengine.org/download) (.NET version)
+2. Install [Godot Mono 4.6+](https://godotengine.org/download) (the .NET version — the standard build cannot load C# scripts). On macOS: `brew install godot-mono`
 3. Clone the repo and run `dotnet test src/CYourOptions.Tests` to verify
 
 ## Development Workflow
@@ -31,9 +31,3 @@
 
 Drop `nodes.csv` and `choices.csv` into a new folder under `src/CYourOptions.Game/stories/`. Run `/lint-csv` to validate before testing in-game.
 
-## Validating Stories
-
-Two Claude Code skills are available for story validation:
-
-- `/lint-csv` — Structural validation (broken references, orphan nodes, pacing)
-- `/playtest` — Narrative validation (consistency, dead ends, path quality)

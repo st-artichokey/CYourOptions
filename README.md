@@ -2,7 +2,7 @@
 
 A branching decision-tree game engine built with C# and Godot 4.
 
-Stories are authored as CSV files and loaded at runtime — no recompilation needed to add or edit content.
+Stories are authored as CSV files and loaded at runtime — you can add or edit story content without recompiling the game.
 
 ## Project Structure
 
@@ -18,17 +18,22 @@ tools/
 ## Prerequisites
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [Godot 4.4+](https://godotengine.org/download) (.NET version)
+- [Godot Mono 4.6+](https://godotengine.org/download) (the .NET version — the standard build cannot load C# scripts). On macOS: `brew install godot-mono`
 
 ## Quick Start
 
 ```bash
+# Build the C# project
+dotnet build src/CYourOptions.Game
+
+# Run the game (use godot-mono if installed via Homebrew)
+godot --path src/CYourOptions.Game
+
 # Run tests
 dotnet test src/CYourOptions.Tests
-
-# Open in Godot
-# Launch Godot → Import → select src/CYourOptions.Game/project.godot
 ```
+
+You can also open the project in the Godot editor: Launch Godot → Import → select `src/CYourOptions.Game/project.godot`.
 
 ## Adding a Story
 

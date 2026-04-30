@@ -37,10 +37,9 @@ You can also open the project in the Godot editor: Launch Godot → Import → s
 
 ## Adding a Story
 
-1. Create a folder under `src/CYourOptions.Game/stories/<your-story-name>/`
-2. Add `nodes.csv` with columns: `Id,Title,Text`
-3. Add `choices.csv` with columns: `FromNodeId,Label,NextNodeId`
-4. In the Godot editor, set the GameController's `StoryPath` export to `res://stories/<your-story-name>`
+1. Create a folder with `nodes.csv` (columns: `Id,Title,Text`) and `choices.csv` (columns: `FromNodeId,Label,NextNodeId`)
+2. Place it under the Godot project's resource path (e.g. `src/CYourOptions.Game/stories/<your-story-name>/`)
+3. In the Godot editor, set the GameController's `StoryPath` export to the `res://` path (e.g. `res://stories/<your-story-name>`)
 
 The first node in `nodes.csv` is the start node. Nodes with no outgoing choices are endings.
 

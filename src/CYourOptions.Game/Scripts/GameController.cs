@@ -7,7 +7,7 @@ namespace CYourOptions.Game.Scripts;
 
 public partial class GameController : Control
 {
-    [Export] public string StoryPath { get; set; } = "res://stories/the-production-incident";
+    [Export] public string StoryPath { get; set; } = "";
 
     private DecisionEngine _engine = null!;
     private string _startNodeId = null!;

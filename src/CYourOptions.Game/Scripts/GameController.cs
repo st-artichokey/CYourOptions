@@ -8,6 +8,7 @@ namespace CYourOptions.Game.Scripts;
 public partial class GameController : Control
 {
     [Export] public string StoryPath { get; set; } = "";
+    [Export] public int ChoiceFontSize { get; set; } = 28;
 
     private DecisionEngine _engine = null!;
     private string _startNodeId = null!;
@@ -69,7 +70,7 @@ public partial class GameController : Control
             var button = new Button();
             button.Text = node.Choices[i].Label;
             button.SizeFlagsHorizontal = SizeFlags.ExpandFill;
-            button.AddThemeFontSizeOverride("font_size", 28);
+            button.AddThemeFontSizeOverride("font_size", ChoiceFontSize);
             int choiceIndex = i;
             button.Pressed += () =>
             {

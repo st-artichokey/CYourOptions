@@ -74,7 +74,7 @@ public class CsvStoryLoaderTests
         Assert.Contains("non-existent node", ex.Message);
     }
 
-[Fact]
+    [Fact]
     public void ParseFromCsv_MissingHeader_Throws()
     {
         var nodesCsv = "Id,Title\nnode1,A";

@@ -20,9 +20,4 @@ public class SaveData
     /// When this save was created. Defaults to now if not specified.
     /// </summary>
     public DateTime SavedAt { get; init; } = DateTime.UtcNow;
-
-    /// <summary>
-    /// Optional user-facing name for this save slot (e.g., "Autosave", "Before the dragon").
-    /// </summary>
-    public string? Label { get; init; }
 }

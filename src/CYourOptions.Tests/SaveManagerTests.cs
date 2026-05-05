@@ -66,14 +66,12 @@ public class SaveManagerTests
         {
             CurrentNodeId = "middle",
             History = ["start"],
-            SavedAt = new DateTime(2026, 4, 28, 12, 0, 0, DateTimeKind.Utc),
-            Label = "My Save"
+            SavedAt = new DateTime(2026, 4, 28, 12, 0, 0, DateTimeKind.Utc)
         };
 
         var json = manager.Serialize(save);
 
         Assert.Contains("\"currentNodeId\": \"middle\"", json);
-        Assert.Contains("\"label\": \"My Save\"", json);
     }
 
     [Fact]
@@ -84,8 +82,7 @@ public class SaveManagerTests
         {
             CurrentNodeId = "end",
             History = ["start", "middle"],
-            SavedAt = new DateTime(2026, 4, 28, 12, 0, 0, DateTimeKind.Utc),
-            Label = "Test"
+            SavedAt = new DateTime(2026, 4, 28, 12, 0, 0, DateTimeKind.Utc)
         };
 
         var json = manager.Serialize(original);
@@ -93,7 +90,6 @@ public class SaveManagerTests
 
         Assert.Equal(original.CurrentNodeId, restored.CurrentNodeId);
         Assert.Equal(original.History, restored.History);
-        Assert.Equal(original.Label, restored.Label);
     }
 
     [Fact]

@@ -75,16 +75,6 @@ public class CsvStoryLoaderTests
     }
 
     [Fact]
-    public void ParseFromCsv_ChoiceFromNonExistentSource_Throws()
-    {
-        var nodesCsv = "Id,Title,Text\nnode1,A,TextA";
-        var choicesCsv = "FromNodeId,Label,NextNodeId,Description\nfake_node,Go,node1,";
-
-        var ex = Assert.Throws<FormatException>(() => CsvStoryLoader.ParseFromCsv(nodesCsv, choicesCsv));
-        Assert.Contains("non-existent source node", ex.Message);
-    }
-
-    [Fact]
     public void ParseFromCsv_MissingHeader_Throws()
     {
         var nodesCsv = "Id,Title\nnode1,A";

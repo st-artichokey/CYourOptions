@@ -36,6 +36,18 @@ if (nodesPath is null || choicesPath is null || outputPath is null || className 
     return 1;
 }
 
+if (!IsValidIdentifier(className))
+{
+    Console.Error.WriteLine($"Error: --class-name '{className}' is not a valid C# identifier.");
+    return 1;
+}
+
+if (!namespaceName.Split('.').All(IsValidIdentifier))
+{
+    Console.Error.WriteLine($"Error: --namespace '{namespaceName}' is not a valid C# namespace.");
+    return 1;
+}
+
 if (!File.Exists(nodesPath))
 {
     Console.Error.WriteLine($"Error: Nodes file not found: {nodesPath}");
@@ -113,3 +125,8 @@ static string Escape(string s) => s
     .Replace("\"", "\\\"")
     .Replace("\n", "\\n")
     .Replace("\r", "\\r");
+
+static bool IsValidIdentifier(string s) =>
+    !string.IsNullOrEmpty(s)
+    && (char.IsLetter(s[0]) || s[0] == '_')
+    && s.All(c => char.IsLetterOrDigit(c) || c == '_');

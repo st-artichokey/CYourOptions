@@ -1,6 +1,6 @@
 using Godot;
-using CYourOptions.Library.Models;
-using CYourOptions.Library.Services;
+using CYourOptions.Game.Scripts.Models;
+using CYourOptions.Game.Scripts.Services;
 using FileAccess = Godot.FileAccess;
 
 namespace CYourOptions.Game.Scripts;
@@ -8,6 +8,7 @@ namespace CYourOptions.Game.Scripts;
 public partial class GameController : Control
 {
     [Export] public string StoryPath { get; set; } = "res://stories/the-production-incident";
+    [Export] public int ChoiceFontSize { get; set; } = 28;
 
     private DecisionEngine _engine = null!;
     private string _startNodeId = null!;
@@ -44,24 +45,12 @@ public partial class GameController : Control
         var nodesPath = $"{storyPath}/nodes.csv";
         var choicesPath = $"{storyPath}/choices.csv";
 
-        var nodesFile = FileAccess.Open(nodesPath, FileAccess.ModeFlags.Read);
-        if (nodesFile is null)
-            throw new System.IO.FileNotFoundException(
-                $"Could not open {nodesPath}: {FileAccess.GetOpenError()}");
+        using var nodesFile = FileAccess.Open(nodesPath, FileAccess.ModeFlags.Read)
+            ?? throw new System.IO.FileNotFoundException($"Could not open {nodesPath}: {FileAccess.GetOpenError()}");
+        using var choicesFile = FileAccess.Open(choicesPath, FileAccess.ModeFlags.Read)
+            ?? throw new System.IO.FileNotFoundException($"Could not open {choicesPath}: {FileAccess.GetOpenError()}");
 
-        var choicesFile = FileAccess.Open(choicesPath, FileAccess.ModeFlags.Read);
-        if (choicesFile is null)
-        {
-            nodesFile.Dispose();
-            throw new System.IO.FileNotFoundException(
-                $"Could not open {choicesPath}: {FileAccess.GetOpenError()}");
-        }
-
-        using (nodesFile)
-        using (choicesFile)
-        {
-            return CsvStoryLoader.ParseFromCsv(nodesFile.GetAsText(), choicesFile.GetAsText());
-        }
+        return CsvStoryLoader.ParseFromCsv(nodesFile.GetAsText(), choicesFile.GetAsText());
     }
 
     private void UpdateUI()
@@ -81,7 +70,7 @@ public partial class GameController : Control
             var button = new Button();
             button.Text = node.Choices[i].Label;
             button.SizeFlagsHorizontal = SizeFlags.ExpandFill;
-            button.AddThemeFontSizeOverride("font_size", 28);
+            button.AddThemeFontSizeOverride("font_size", ChoiceFontSize);
             int choiceIndex = i;
             button.Pressed += () =>
             {

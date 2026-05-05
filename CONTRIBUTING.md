@@ -29,5 +29,5 @@
 
 ## Adding a Story
 
-Drop `nodes.csv` and `choices.csv` into a new folder under `src/CYourOptions.Game/stories/`. Run `/lint-csv` to validate before testing in-game.
+Create a folder with `nodes.csv` and `choices.csv`, place it under the Godot project's resource path, and set the GameController's `StoryPath` export to point to it.
 

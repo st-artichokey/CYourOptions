@@ -1,17 +1,9 @@
-using CYourOptions.Library.Models;
+using CYourOptions.Game.Scripts.Models;
 
-namespace CYourOptions.Library.Services;
+namespace CYourOptions.Game.Scripts.Services;
 
 public static class CsvStoryLoader
 {
-    public static List<DecisionNode> LoadFromCsv(string nodesCsvPath, string choicesCsvPath)
-    {
-        var nodesText = File.ReadAllText(nodesCsvPath);
-        var choicesText = File.ReadAllText(choicesCsvPath);
-        return ParseFromCsv(nodesText, choicesText);
-    }
-
-
     public static List<DecisionNode> ParseFromCsv(string nodesCsv, string choicesCsv)
     {
         var nodeRows = ParseCsv(nodesCsv);
@@ -75,19 +67,13 @@ public static class CsvStoryLoader
             });
         }
 
-        Validate(nodes, choicesByNode);
+        Validate(nodes);
         return nodes;
     }
 
-    private static void Validate(List<DecisionNode> nodes, Dictionary<string, List<Choice>> choicesByNode)
+    private static void Validate(List<DecisionNode> nodes)
     {
         var nodeIds = nodes.Select(n => n.Id).ToHashSet();
-
-        foreach (var fromId in choicesByNode.Keys)
-        {
-            if (!nodeIds.Contains(fromId))
-                throw new FormatException($"Choices reference non-existent source node: '{fromId}'");
-        }
 
         foreach (var node in nodes)
         {

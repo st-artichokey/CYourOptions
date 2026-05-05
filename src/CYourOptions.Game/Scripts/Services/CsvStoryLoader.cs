@@ -1,17 +1,9 @@
-using CYourOptions.Library.Models;
+using CYourOptions.Game.Scripts.Models;
 
-namespace CYourOptions.Library.Services;
+namespace CYourOptions.Game.Scripts.Services;
 
 public static class CsvStoryLoader
 {
-    public static List<DecisionNode> LoadFromCsv(string nodesCsvPath, string choicesCsvPath)
-    {
-        var nodesText = File.ReadAllText(nodesCsvPath);
-        var choicesText = File.ReadAllText(choicesCsvPath);
-        return ParseFromCsv(nodesText, choicesText);
-    }
-
-
     public static List<DecisionNode> ParseFromCsv(string nodesCsv, string choicesCsv)
     {
         var nodeRows = ParseCsv(nodesCsv);

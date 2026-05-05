@@ -1,13 +1,13 @@
 using Godot;
-using CYourOptions.Library.Models;
-using CYourOptions.Library.Services;
+using CYourOptions.Game.Scripts.Models;
+using CYourOptions.Game.Scripts.Services;
 using FileAccess = Godot.FileAccess;
 
 namespace CYourOptions.Game.Scripts;
 
 public partial class GameController : Control
 {
-    [Export] public string StoryPath { get; set; } = "";
+    [Export] public string StoryPath { get; set; } = "res://stories/the-production-incident";
     [Export] public int ChoiceFontSize { get; set; } = 28;
 
     private DecisionEngine _engine = null!;

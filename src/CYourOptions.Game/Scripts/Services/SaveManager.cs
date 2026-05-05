@@ -1,12 +1,8 @@
 using System.Text.Json;
-using CYourOptions.Library.Models;
+using CYourOptions.Game.Scripts.Models;
 
-namespace CYourOptions.Library.Services;
+namespace CYourOptions.Game.Scripts.Services;
 
-/// <summary>
-/// Handles serialization and state transfer for decision engine save/load.
-/// Does not perform file I/O — the caller provides strings in and out.
-/// </summary>
 public class SaveManager
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -15,10 +11,6 @@ public class SaveManager
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    /// <summary>
-    /// Capture the engine's current state as a serializable object.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Engine has not been started.</exception>
     public SaveData CreateSnapshot(DecisionEngine engine)
     {
         if (engine.CurrentNode is null)
@@ -32,11 +24,6 @@ public class SaveManager
         };
     }
 
-    /// <summary>
-    /// Replay saved history onto the engine, restoring it to the saved position.
-    /// Walks the tree from the first history node forward, validating each step.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">Save data contains an invalid path through the tree.</exception>
     public void RestoreSnapshot(DecisionEngine engine, SaveData data)
     {
         if (data.History.Count == 0)
@@ -59,18 +46,11 @@ public class SaveManager
         }
     }
 
-    /// <summary>
-    /// Convert save data to a JSON string for storage.
-    /// </summary>
     public string Serialize(SaveData data)
     {
         return JsonSerializer.Serialize(data, JsonOptions);
     }
 
-    /// <summary>
-    /// Parse a JSON string back into save data.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">JSON is null or malformed.</exception>
     public SaveData Deserialize(string json)
     {
         return JsonSerializer.Deserialize<SaveData>(json, JsonOptions)
